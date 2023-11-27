@@ -3,8 +3,13 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\Migrator;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
+#[AsCommand(
+    name: 'archive',
+    description: 'Move migration into archive',
+)]
 class ArchiveCommand extends AbstractCommand
 {
     /**
@@ -12,8 +17,7 @@ class ArchiveCommand extends AbstractCommand
      *
      * @var Migrator
      */
-    protected $migrator;
-    protected static $defaultName = 'archive';
+    protected Migrator $migrator;
 
     /**
      * Constructor.
@@ -21,7 +25,7 @@ class ArchiveCommand extends AbstractCommand
      * @param Migrator    $migrator
      * @param string|null $name
      */
-    public function __construct(Migrator $migrator, $name = null)
+    public function __construct(Migrator $migrator, ?string $name = null)
     {
         $this->migrator = $migrator;
 
@@ -31,10 +35,14 @@ class ArchiveCommand extends AbstractCommand
     /**
      * Configures the current command.
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this->setDescription('Move migration into archive')
-            ->addOption('without', 'w', InputOption::VALUE_REQUIRED, 'Archive without last N migration');
+        $this->addOption(
+            'without',
+            'w',
+            InputOption::VALUE_REQUIRED,
+            'Archive without last N migration'
+        );
     }
 
     /**
@@ -42,10 +50,11 @@ class ArchiveCommand extends AbstractCommand
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $files = $this->migrator->getAllMigrations();
         $without = $this->input->getOption('without') ?: 0;
+
         if ($without > 0) {
             $files = array_slice($files, 0, $without * -1);
         }
@@ -57,5 +66,7 @@ class ArchiveCommand extends AbstractCommand
         } else {
             $this->info('Nothing to move');
         }
+
+        return 0;
     }
 }

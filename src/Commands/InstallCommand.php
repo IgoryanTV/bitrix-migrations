@@ -3,7 +3,12 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\Interfaces\DatabaseStorageInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(
+    name: 'install',
+    description: 'Create the migration database table',
+)]
 class InstallCommand extends AbstractCommand
 {
     /**
@@ -11,16 +16,14 @@ class InstallCommand extends AbstractCommand
      *
      * @var DatabaseStorageInterface
      */
-    protected $database;
+    protected DatabaseStorageInterface $database;
 
     /**
      * Table in DB to store migrations that have been already run.
      *
      * @var string
      */
-    protected $table;
-
-    protected static $defaultName = 'install';
+    protected string $table;
 
     /**
      * Constructor.
@@ -38,19 +41,11 @@ class InstallCommand extends AbstractCommand
     }
 
     /**
-     * Configures the current command.
-     */
-    protected function configure()
-    {
-        $this->setDescription('Create the migration database table');
-    }
-
-    /**
      * Execute the console command.
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         if ($this->database->checkMigrationTableExistence()) {
             $this->abort("Table \"{$this->table}\" already exists");
@@ -59,5 +54,7 @@ class InstallCommand extends AbstractCommand
         $this->database->createMigrationTable();
 
         $this->info('Migration table has been successfully created!');
+
+        return 0;
     }
 }

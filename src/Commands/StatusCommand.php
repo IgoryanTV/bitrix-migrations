@@ -3,7 +3,12 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\Migrator;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(
+    name: 'status',
+    description: 'Show status about last migrations',
+)]
 class StatusCommand extends AbstractCommand
 {
     /**
@@ -11,9 +16,7 @@ class StatusCommand extends AbstractCommand
      *
      * @var Migrator
      */
-    protected $migrator;
-
-    protected static $defaultName = 'status';
+    protected Migrator $migrator;
 
     /**
      * Constructor.
@@ -21,7 +24,7 @@ class StatusCommand extends AbstractCommand
      * @param Migrator    $migrator
      * @param string|null $name
      */
-    public function __construct(Migrator $migrator, $name = null)
+    public function __construct(Migrator $migrator, ?string $name = null)
     {
         $this->migrator = $migrator;
 
@@ -29,25 +32,19 @@ class StatusCommand extends AbstractCommand
     }
 
     /**
-     * Configures the current command.
-     */
-    protected function configure()
-    {
-        $this->setDescription('Show status about last migrations');
-    }
-
-    /**
      * Execute the console command.
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $this->showOldMigrations();
 
         $this->output->write("\r\n");
 
         $this->showNewMigrations();
+
+        return 0;
     }
 
     /**
@@ -55,13 +52,14 @@ class StatusCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function showOldMigrations()
+    protected function showOldMigrations(): void
     {
         $old = collect($this->migrator->getRanMigrations());
 
         $this->output->writeln("<fg=yellow>Old migrations:\r\n</>");
 
         $max = 5;
+
         if ($old->count() > $max) {
             $this->output->writeln('<fg=yellow>...</>');
 
@@ -78,7 +76,7 @@ class StatusCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function showNewMigrations()
+    protected function showNewMigrations(): void
     {
         $new = collect($this->migrator->getMigrationsToRun());
 

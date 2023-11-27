@@ -10,22 +10,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var InputInterface
-     */
-    protected $input;
-
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
+    protected InputInterface $input;
+    protected OutputInterface $output;
 
     /**
      * Configures the current command.
      *
      * @param string $message
      */
-    protected function abort($message = '')
+    protected function abort(string $message = ''): void
     {
         if ($message) {
             $this->error($message);
@@ -44,7 +37,7 @@ abstract class AbstractCommand extends Command
      *
      * @return null|int null or 0 if everything went fine, or an error code.
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         $this->input = $input;
         $this->output = $output;
@@ -64,9 +57,9 @@ abstract class AbstractCommand extends Command
     /**
      * Echo an error message.
      *
-     * @param string$message
+     * @param string $message
      */
-    protected function error($message)
+    protected function error(string $message): void
     {
         $this->output->writeln("<error>{$message}</error>");
     }
@@ -76,7 +69,7 @@ abstract class AbstractCommand extends Command
      *
      * @param string $message
      */
-    protected function info($message)
+    protected function info(string $message): void
     {
         $this->output->writeln("<info>{$message}</info>");
     }
@@ -86,9 +79,9 @@ abstract class AbstractCommand extends Command
      *
      * @param string $message
      */
-    protected function message($message)
+    protected function message(string $message): void
     {
-        $this->output->writeln("{$message}");
+        $this->output->writeln($message);
     }
 
     /**

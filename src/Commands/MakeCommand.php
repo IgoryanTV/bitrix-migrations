@@ -3,9 +3,14 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\Migrator;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
+#[AsCommand(
+    name: 'status',
+    description: 'Show status about last migrations',
+)]
 class MakeCommand extends AbstractCommand
 {
     /**
@@ -13,9 +18,7 @@ class MakeCommand extends AbstractCommand
      *
      * @var Migrator
      */
-    protected $migrator;
-
-    protected static $defaultName = 'make';
+    protected Migrator $migrator;
 
     /**
      * Constructor.
@@ -23,7 +26,7 @@ class MakeCommand extends AbstractCommand
      * @param Migrator    $migrator
      * @param string|null $name
      */
-    public function __construct(Migrator $migrator, $name = null)
+    public function __construct(Migrator $migrator, ?string $name = null)
     {
         $this->migrator = $migrator;
 
@@ -33,10 +36,9 @@ class MakeCommand extends AbstractCommand
     /**
      * Configures the current command.
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this->setDescription('Create a new migration file')
-            ->addArgument(
+        $this->addArgument(
                 'name',
                 InputArgument::REQUIRED,
                 'The name of the migration'
@@ -60,7 +62,7 @@ class MakeCommand extends AbstractCommand
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $migration = $this->migrator->createMigration(
             $this->input->getArgument('name'),
@@ -70,5 +72,7 @@ class MakeCommand extends AbstractCommand
         );
 
         $this->message("<info>Migration created:</info> {$migration}.php");
+
+        return 0;
     }
 }

@@ -3,9 +3,14 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\TemplatesCollection;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 
+#[AsCommand(
+    name: 'templates',
+    description: 'Show the list of available migration templates',
+)]
 class TemplatesCommand extends AbstractCommand
 {
     /**
@@ -13,9 +18,7 @@ class TemplatesCommand extends AbstractCommand
      *
      * @var TemplatesCollection
      */
-    protected $collection;
-
-    protected static $defaultName = 'templates';
+    protected TemplatesCollection $collection;
 
     /**
      * Constructor.
@@ -23,7 +26,7 @@ class TemplatesCommand extends AbstractCommand
      * @param TemplatesCollection $collection
      * @param string|null         $name
      */
-    public function __construct(TemplatesCollection $collection, $name = null)
+    public function __construct(TemplatesCollection $collection, string $name = null)
     {
         $this->collection = $collection;
 
@@ -31,24 +34,18 @@ class TemplatesCommand extends AbstractCommand
     }
 
     /**
-     * Configures the current command.
-     */
-    protected function configure()
-    {
-        $this->setDescription('Show the list of available migration templates');
-    }
-
-    /**
      * Execute the console command.
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $table = new Table($this->output);
         $table->setHeaders(['Name', 'Path', 'Description'])->setRows($this->collectRows());
         $table->setStyle('borderless');
         $table->render();
+
+        return 0;
     }
 
     /**
@@ -56,11 +53,11 @@ class TemplatesCommand extends AbstractCommand
      *
      * @return array
      */
-    protected function collectRows()
+    protected function collectRows(): array
     {
         $rows = collect($this->collection->all())
             ->filter(function ($template) {
-                return $template['is_alias'] == false;
+                return $template['is_alias'] === false;
             })
             ->sortBy('name')
             ->map(function ($template) {
@@ -84,13 +81,15 @@ class TemplatesCommand extends AbstractCommand
      *
      * @return array
      */
-    protected function separateRows($templates)
+    protected function separateRows($templates): array
     {
         $rows = [];
+
         foreach ($templates as $template) {
             $rows[] = $template;
             $rows[] = new TableSeparator();
         }
+
         unset($rows[count($rows) - 1]);
 
         return $rows;

@@ -3,7 +3,12 @@
 namespace Arrilot\BitrixMigrations\Commands;
 
 use Arrilot\BitrixMigrations\Migrator;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(
+    name: 'migrate',
+    description: 'Run all outstanding migrations',
+)]
 class MigrateCommand extends AbstractCommand
 {
     /**
@@ -11,16 +16,14 @@ class MigrateCommand extends AbstractCommand
      *
      * @var Migrator
      */
-    protected $migrator;
-
-    protected static $defaultName = 'migrate';
+    protected Migrator $migrator;
     /**
      * Constructor.
      *
      * @param Migrator    $migrator
      * @param string|null $name
      */
-    public function __construct(Migrator $migrator, $name = null)
+    public function __construct(Migrator $migrator, ?string $name = null)
     {
         $this->migrator = $migrator;
 
@@ -28,19 +31,12 @@ class MigrateCommand extends AbstractCommand
     }
 
     /**
-     * Configures the current command.
-     */
-    protected function configure()
-    {
-        $this->setDescription('Run all outstanding migrations');
-    }
-
-    /**
      * Execute the console command.
      *
      * @return null|int
+     * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $toRun = $this->migrator->getMigrationsToRun();
 
@@ -52,5 +48,7 @@ class MigrateCommand extends AbstractCommand
         } else {
             $this->info('Nothing to migrate');
         }
+
+        return 0;
     }
 }
