@@ -8,8 +8,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 #[AsCommand(
-    name: 'status',
-    description: 'Show status about last migrations',
+    name: 'make',
+    description: 'Create a new migration file',
 )]
 class MakeCommand extends AbstractCommand
 {
